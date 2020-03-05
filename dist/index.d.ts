@@ -1,18 +1,18 @@
 import { iTiming } from './iLoopTimer';
 declare class LoopTimer {
     private static instance;
-    private interval;
-    private events;
+    private _interval;
+    private _events;
     constructor();
     /**
      * 执行事件
      */
-    private executeEvent;
+    private _executeEvent;
     /**
      * 获取下一次执行任务的时间点
      * @param info
      */
-    private getNextExcuteTime;
+    private _getNextExcuteTime;
     /**
      * 获取轮询实例对象
      */

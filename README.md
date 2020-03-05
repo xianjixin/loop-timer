@@ -2,6 +2,8 @@
 
 模拟linux Crontab 的js定时任务,可以指定时间来执行任务
 
+> npm install loop-timer -S
+
 ### 使用方法
 
 1. 使用了单例设计,获取实例对象
@@ -12,10 +14,11 @@
 
         
         //nodejs中使用
+        const loopTimer = require('loop-timer').default;
         function log(){
             console.log('timer run:', new Date().getTime());
         }
-        timer.registry(log, true, {
+        loopTimer.registry(log, true, {
             seconds: '*/10',
             minutes: '*',
             hour: '*'

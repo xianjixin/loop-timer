@@ -3,25 +3,25 @@ import { isValidTime } from './TimeNodeUtils';
 
 class LoopTimer {
   private static instance: LoopTimer;
-  private interval: number;
-  private events: Map<String, iLoopTimer> = new Map();
+  private _interval: number;
+  private _events: Map<String, iLoopTimer> = new Map();
 
   constructor() {
-    this.executeEvent();
-    this.interval = setInterval(() => {
-      this.executeEvent();
+    this._executeEvent();
+    this._interval = setInterval(() => {
+      this._executeEvent();
     }, 1000);
   }
 
   /**
    * 执行事件
    */
-  private executeEvent() {
+  private _executeEvent() {
     let date = new Date();
     let time = date.getTime();
     let deleteEvent: iLoopTimer[] = [];
-    this.events.forEach(info => {
-      let flag = this.getNextExcuteTime(info, date);
+    this._events.forEach(info => {
+      let flag = this._getNextExcuteTime(info, date);
 
       if (flag) {
         info.func();
@@ -39,8 +39,8 @@ class LoopTimer {
     });
     if (deleteEvent.length > 0) {
       deleteEvent.forEach(item => {
-        if (this.events.has(item.func.name)) {
-          this.events.delete(item.func.name);
+        if (this._events.has(item.func.name)) {
+          this._events.delete(item.func.name);
         }
       });
     }
@@ -50,7 +50,7 @@ class LoopTimer {
    * 获取下一次执行任务的时间点
    * @param info
    */
-  private getNextExcuteTime(item: iLoopTimer, nowTime: Date): boolean {
+  private _getNextExcuteTime(item: iLoopTimer, nowTime: Date): boolean {
     let info = item.frequency;
     //每秒执行任务的判断
     // if (info.seconds === '*' && info.minutes === '*' && info.hour === '*' && info.day === '*' && info.week === '*' && info.month === '*') {
@@ -98,7 +98,7 @@ class LoopTimer {
   registry(func: Function, isLoop: boolean = false, frequency: iTiming = { seconds: '*', minutes: '*', hour: '*'}) {
     if (!func.name) throw 'LoopTimer的registry方法: 不支持匿名函数';
 
-    this.events.set(func.name, {
+    this._events.set(func.name, {
       lastTime: new Date().getTime(),
       func,
       frequency,
@@ -111,15 +111,15 @@ class LoopTimer {
    * @param func 要取消的方法
    */
   unRegister(func: Function) {
-    if (this.events.has(func.name)) {
-      this.events.delete(func.name);
+    if (this._events.has(func.name)) {
+      this._events.delete(func.name);
     }
   }
   /**
    * 停止定时器
    */
   stopLoopTimer() {
-    clearInterval(this.interval);
+    clearInterval(this._interval);
   }
 }
 
