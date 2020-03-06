@@ -56,7 +56,7 @@ class LoopTimer {
           },
           (err: any) => {
             if (info.callback) {
-              info.callback(eResultCode.FAILED, err);
+              info.callback(eResultCode.WRANING, err);
             }
             info.lastTime = new Date().getTime();
             info.isExecute = true;
@@ -64,7 +64,7 @@ class LoopTimer {
         )
         .catch((err: any) => {
           if (info.callback) {
-            info.callback(eResultCode.FAILED, err);
+            info.callback(eResultCode.ERROR, err);
           }
           info.lastTime = new Date().getTime();
           info.isExecute = true;
