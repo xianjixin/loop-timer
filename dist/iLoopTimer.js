@@ -11,6 +11,16 @@ var eTimeType;
 })(eTimeType = exports.eTimeType || (exports.eTimeType = {}));
 var eResultCode;
 (function (eResultCode) {
+    /**
+     * 任务执行成功,
+     */
     eResultCode[eResultCode["SUCCESS"] = 0] = "SUCCESS";
-    eResultCode[eResultCode["FAILED"] = 1] = "FAILED";
+    /**
+     * 任务执行完毕,但是结果不尽如人意
+     */
+    eResultCode[eResultCode["WRANING"] = 1] = "WRANING";
+    /**
+     * 任务执行发生错误
+     */
+    eResultCode[eResultCode["ERROR"] = 2] = "ERROR";
 })(eResultCode = exports.eResultCode || (exports.eResultCode = {}));

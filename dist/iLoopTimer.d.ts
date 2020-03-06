@@ -59,6 +59,16 @@ export declare enum eTimeType {
     MONTH = 5
 }
 export declare enum eResultCode {
+    /**
+     * 任务执行成功,
+     */
     SUCCESS = 0,
-    FAILED = 1
+    /**
+     * 任务执行完毕,但是结果不尽如人意
+     */
+    WRANING = 1,
+    /**
+     * 任务执行发生错误
+     */
+    ERROR = 2
 }

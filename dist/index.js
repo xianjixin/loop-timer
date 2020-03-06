@@ -49,14 +49,14 @@ class LoopTimer {
                 }
             }, (err) => {
                 if (info.callback) {
-                    info.callback(iLoopTimer_1.eResultCode.FAILED, err);
+                    info.callback(iLoopTimer_1.eResultCode.WRANING, err);
                 }
                 info.lastTime = new Date().getTime();
                 info.isExecute = true;
             })
                 .catch((err) => {
                 if (info.callback) {
-                    info.callback(iLoopTimer_1.eResultCode.FAILED, err);
+                    info.callback(iLoopTimer_1.eResultCode.ERROR, err);
                 }
                 info.lastTime = new Date().getTime();
                 info.isExecute = true;
