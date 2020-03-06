@@ -4,6 +4,9 @@ export interface iLoopTimer {
     frequency: iTiming;
     isLoop: boolean;
     isExecute: boolean;
+    callback?: {
+        (code: eResultCode, data?: any): void;
+    };
 }
 export interface iTiming {
     /**
@@ -54,4 +57,8 @@ export declare enum eTimeType {
     DAY = 3,
     WEEK = 4,
     MONTH = 5
+}
+export declare enum eResultCode {
+    SUCCESS = 0,
+    FAILED = 1
 }

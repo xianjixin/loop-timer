@@ -1,4 +1,4 @@
-import { iLoopTimer, iTiming, eTimeType } from "./iLoopTimer";
+import { iLoopTimer, iTiming, eTimeType, eResultCode } from "./iLoopTimer";
 import { isValidTime } from "./TimeNodeUtils";
 
 class LoopTimer {
@@ -18,15 +18,12 @@ class LoopTimer {
    */
   private _executeEvent() {
     let date = new Date();
-    let time = date.getTime();
     let deleteEvent: iLoopTimer[] = [];
     this._events.forEach(info => {
       let flag = this._getNextExcuteTime(info, date);
 
       if (flag) {
-        info.func();
-        info.lastTime = new Date().getTime();
-        info.isExecute = true;
+        this._executeFunc(info);
       }
 
       if (info.isExecute === false) return; //如果任务还没有执行过,则不进入删除逻辑
@@ -43,6 +40,42 @@ class LoopTimer {
           this._events.delete(item.func.name);
         }
       });
+    }
+  }
+  private _executeFunc(info: iLoopTimer) {
+    if (info.func.constructor.name === "AsyncFunction") {
+      info
+        .func()
+        .then(
+          (res: any) => {
+            info.lastTime = new Date().getTime();
+            info.isExecute = true;
+            if (info.callback) {
+              info.callback(eResultCode.SUCCESS, res);
+            }
+          },
+          (err: any) => {
+            if (info.callback) {
+              info.callback(eResultCode.FAILED, err);
+            }
+            info.lastTime = new Date().getTime();
+            info.isExecute = true;
+          }
+        )
+        .catch((err: any) => {
+          if (info.callback) {
+            info.callback(eResultCode.FAILED, err);
+          }
+          info.lastTime = new Date().getTime();
+          info.isExecute = true;
+        });
+    } else if (info.func.constructor.name === "Function") {
+      let result = info.func();
+      if (info.callback) {
+        info.callback(eResultCode.SUCCESS, result);
+      }
+      info.lastTime = new Date().getTime();
+      info.isExecute = true;
     }
   }
 
@@ -115,21 +148,25 @@ class LoopTimer {
    * @param func 要执行的方法
    * @param frequency 执行的频率
    * @param isLoop 是否轮询,不停执行, 默认是false,只执行一次
+   * @param callback 回调结果
    */
   // registry(func: Function, isLoop: boolean = false, frequency: iTiming = { seconds: '*', minutes: '*', hour: '*', day: '*', week: '*', month: '*' }) {
-  registry(
+  registry<T>(
     func: Function,
     frequency: iTiming = { seconds: "*", minutes: "*", hour: "*" },
-    isLoop: boolean = false
+    isLoop: boolean = false,
+    callback?: {
+      (code: eResultCode, data?: T): void;
+    }
   ) {
     if (!func.name) throw "LoopTimer的registry方法: 不支持匿名函数";
-
     this._events.set(func.name, {
       lastTime: new Date().getTime(),
       func,
       frequency,
       isLoop,
-      isExecute: false
+      isExecute: false,
+      callback
     });
   }
   /**

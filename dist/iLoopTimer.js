@@ -9,3 +9,8 @@ var eTimeType;
     eTimeType[eTimeType["WEEK"] = 4] = "WEEK";
     eTimeType[eTimeType["MONTH"] = 5] = "MONTH";
 })(eTimeType = exports.eTimeType || (exports.eTimeType = {}));
+var eResultCode;
+(function (eResultCode) {
+    eResultCode[eResultCode["SUCCESS"] = 0] = "SUCCESS";
+    eResultCode[eResultCode["FAILED"] = 1] = "FAILED";
+})(eResultCode = exports.eResultCode || (exports.eResultCode = {}));
