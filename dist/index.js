@@ -21,7 +21,7 @@ class LoopTimer {
             let flag = this._getNextExcuteTime(info, date);
             if (flag) {
                 info.func();
-                info.lastTime = time;
+                info.lastTime = new Date().getTime();
                 info.isExecute = true;
             }
             if (info.isExecute === false)
@@ -41,7 +41,7 @@ class LoopTimer {
         }
     }
     /**
-     * 获取下一次执行任务的时间点
+     * 获取当前任务是否可以执行了, 通过比对当前的时间和任务要求执行的时间来比对
      * @param info
      */
     _getNextExcuteTime(item, nowTime) {
@@ -52,7 +52,7 @@ class LoopTimer {
         //     return true;
         //   }
         // }
-        if (info.seconds === '*' && info.minutes === '*' && info.hour === '*') {
+        if (info.seconds === "*" && info.minutes === "*" && info.hour === "*") {
             if (nowTime.getTime() - item.lastTime >= 1000) {
                 return true;
             }
@@ -83,19 +83,19 @@ class LoopTimer {
     /**
      * 注册轮询事件
      * @param func 要执行的方法
-     * @param isLoop 是否轮询,不停执行
      * @param frequency 执行的频率
+     * @param isLoop 是否轮询,不停执行, 默认是false,只执行一次
      */
     // registry(func: Function, isLoop: boolean = false, frequency: iTiming = { seconds: '*', minutes: '*', hour: '*', day: '*', week: '*', month: '*' }) {
-    registry(func, isLoop = false, frequency = { seconds: '*', minutes: '*', hour: '*' }) {
+    registry(func, frequency = { seconds: "*", minutes: "*", hour: "*" }, isLoop = false) {
         if (!func.name)
-            throw 'LoopTimer的registry方法: 不支持匿名函数';
+            throw "LoopTimer的registry方法: 不支持匿名函数";
         this._events.set(func.name, {
             lastTime: new Date().getTime(),
             func,
             frequency,
             isLoop,
-            isExecute: false,
+            isExecute: false
         });
     }
     /**

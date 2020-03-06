@@ -1,5 +1,5 @@
-import { iLoopTimer, iTiming, eTimeType } from './iLoopTimer';
-import { isValidTime } from './TimeNodeUtils';
+import { iLoopTimer, iTiming, eTimeType } from "./iLoopTimer";
+import { isValidTime } from "./TimeNodeUtils";
 
 class LoopTimer {
   private static instance: LoopTimer;
@@ -25,7 +25,7 @@ class LoopTimer {
 
       if (flag) {
         info.func();
-        info.lastTime = time;
+        info.lastTime = new Date().getTime();
         info.isExecute = true;
       }
 
@@ -47,7 +47,7 @@ class LoopTimer {
   }
 
   /**
-   * 获取下一次执行任务的时间点
+   * 获取当前任务是否可以执行了, 通过比对当前的时间和任务要求执行的时间来比对
    * @param info
    */
   private _getNextExcuteTime(item: iLoopTimer, nowTime: Date): boolean {
@@ -58,7 +58,7 @@ class LoopTimer {
     //     return true;
     //   }
     // }
-    if (info.seconds === '*' && info.minutes === '*' && info.hour === '*') {
+    if (info.seconds === "*" && info.minutes === "*" && info.hour === "*") {
       if (nowTime.getTime() - item.lastTime >= 1000) {
         return true;
       }
@@ -69,11 +69,33 @@ class LoopTimer {
     //判断小时,
 
     // if (isValidByHours(item, nowTime)) {
-    if (isValidTime(info.hour, new Date(item.lastTime).getHours(), nowTime.getHours(), /^\*\/[1-9]$|^\*\/[1-2][0-4]$/, eTimeType.HOUR)) {
+    if (
+      isValidTime(
+        info.hour,
+        new Date(item.lastTime).getHours(),
+        nowTime.getHours(),
+        /^\*\/[1-9]$|^\*\/[1-2][0-4]$/,
+        eTimeType.HOUR
+      )
+    ) {
       //再判断分钟是否有效  分钟的 斜线类型是  */0-59
-      if (isValidTime(info.minutes, new Date(item.lastTime).getMinutes(), nowTime.getMinutes(), /^\*\/[1-9]$|^\*\/[1-5][0-9]$/, eTimeType.MINUTES)) {
+      if (
+        isValidTime(
+          info.minutes,
+          new Date(item.lastTime).getMinutes(),
+          nowTime.getMinutes(),
+          /^\*\/[1-9]$|^\*\/[1-5][0-9]$/,
+          eTimeType.MINUTES
+        )
+      ) {
         //再判断秒数是否有效 秒级的 斜线类型是  */0-59
-        return isValidTime(info.seconds, new Date(item.lastTime).getSeconds(), nowTime.getSeconds(), /^\*\/[1-9]$|^\*\/[1-5][0-9]$/, eTimeType.SECONDS);
+        return isValidTime(
+          info.seconds,
+          new Date(item.lastTime).getSeconds(),
+          nowTime.getSeconds(),
+          /^\*\/[1-9]$|^\*\/[1-5][0-9]$/,
+          eTimeType.SECONDS
+        );
       }
     }
     return false;
@@ -91,19 +113,23 @@ class LoopTimer {
   /**
    * 注册轮询事件
    * @param func 要执行的方法
-   * @param isLoop 是否轮询,不停执行
    * @param frequency 执行的频率
+   * @param isLoop 是否轮询,不停执行, 默认是false,只执行一次
    */
   // registry(func: Function, isLoop: boolean = false, frequency: iTiming = { seconds: '*', minutes: '*', hour: '*', day: '*', week: '*', month: '*' }) {
-  registry(func: Function, isLoop: boolean = false, frequency: iTiming = { seconds: '*', minutes: '*', hour: '*'}) {
-    if (!func.name) throw 'LoopTimer的registry方法: 不支持匿名函数';
+  registry(
+    func: Function,
+    frequency: iTiming = { seconds: "*", minutes: "*", hour: "*" },
+    isLoop: boolean = false
+  ) {
+    if (!func.name) throw "LoopTimer的registry方法: 不支持匿名函数";
 
     this._events.set(func.name, {
       lastTime: new Date().getTime(),
       func,
       frequency,
       isLoop,
-      isExecute: false,
+      isExecute: false
     });
   }
   /**
