@@ -1,9 +1,27 @@
 export interface iLoopTimer {
+    /**
+     * 任务最后一次执行的时间
+     */
     lastTime: number;
+    /**
+     * 定时时间到了以后,需要执行的任务
+     */
     func: Function;
+    /**
+     * 执行频率,或者说设定的时间点
+     */
     frequency: iTiming;
+    /**
+     * 是否轮询
+     */
     isLoop: boolean;
-    isExecute: boolean;
+    /**
+     * 任务的执行状态
+     */
+    executeStatus: eExcuteStatus;
+    /**
+     * 回调通知任务的执行结果
+     */
     callback?: {
         (code: eResultCode, data?: any): void;
     };
@@ -71,4 +89,9 @@ export declare enum eResultCode {
      * 任务执行发生错误
      */
     ERROR = 2
+}
+export declare enum eExcuteStatus {
+    UNEXECUTED = 0,
+    PENDING = 1,
+    END = 2
 }

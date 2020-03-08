@@ -24,3 +24,9 @@ var eResultCode;
      */
     eResultCode[eResultCode["ERROR"] = 2] = "ERROR";
 })(eResultCode = exports.eResultCode || (exports.eResultCode = {}));
+var eExcuteStatus;
+(function (eExcuteStatus) {
+    eExcuteStatus[eExcuteStatus["UNEXECUTED"] = 0] = "UNEXECUTED";
+    eExcuteStatus[eExcuteStatus["PENDING"] = 1] = "PENDING";
+    eExcuteStatus[eExcuteStatus["END"] = 2] = "END";
+})(eExcuteStatus = exports.eExcuteStatus || (exports.eExcuteStatus = {}));

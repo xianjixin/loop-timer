@@ -21,7 +21,7 @@ class LoopTimer {
             if (flag) {
                 this._executeFunc(info);
             }
-            if (info.isExecute === false)
+            if (info.executeStatus !== iLoopTimer_1.eExcuteStatus.END)
                 return; //如果任务还没有执行过,则不进入删除逻辑
             //以下两个判断都是为了将只执行一次的任务都放进数组,
             //事件执行以后,就从事件循环里删除掉.
@@ -38,12 +38,16 @@ class LoopTimer {
         }
     }
     _executeFunc(info) {
-        if (info.func.constructor.name === "AsyncFunction") {
+        /**
+         * 任务如果是异步任务, 并且任务的状态是未执行状态或者是需要一直轮询且已经执行完毕过一次的任务,才能再次执行
+         */
+        if (info.func.constructor.name === "AsyncFunction" && (info.executeStatus === iLoopTimer_1.eExcuteStatus.UNEXECUTED || info.executeStatus === iLoopTimer_1.eExcuteStatus.END)) {
+            info.executeStatus = iLoopTimer_1.eExcuteStatus.PENDING;
             info
                 .func()
                 .then((res) => {
                 info.lastTime = new Date().getTime();
-                info.isExecute = true;
+                info.executeStatus = iLoopTimer_1.eExcuteStatus.END;
                 if (info.callback) {
                     info.callback(iLoopTimer_1.eResultCode.SUCCESS, res);
                 }
@@ -52,14 +56,14 @@ class LoopTimer {
                     info.callback(iLoopTimer_1.eResultCode.WRANING, err);
                 }
                 info.lastTime = new Date().getTime();
-                info.isExecute = true;
+                info.executeStatus = iLoopTimer_1.eExcuteStatus.END;
             })
                 .catch((err) => {
                 if (info.callback) {
                     info.callback(iLoopTimer_1.eResultCode.ERROR, err);
                 }
                 info.lastTime = new Date().getTime();
-                info.isExecute = true;
+                info.executeStatus = iLoopTimer_1.eExcuteStatus.END;
             });
         }
         else if (info.func.constructor.name === "Function") {
@@ -68,7 +72,7 @@ class LoopTimer {
                 info.callback(iLoopTimer_1.eResultCode.SUCCESS, result);
             }
             info.lastTime = new Date().getTime();
-            info.isExecute = true;
+            info.executeStatus = iLoopTimer_1.eExcuteStatus.END;
         }
     }
     /**
@@ -127,7 +131,7 @@ class LoopTimer {
             func,
             frequency,
             isLoop,
-            isExecute: false,
+            executeStatus: iLoopTimer_1.eExcuteStatus.UNEXECUTED,
             callback
         });
     }
