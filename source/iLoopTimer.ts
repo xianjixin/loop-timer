@@ -91,7 +91,16 @@ export enum eResultCode {
   ERROR = 2
 }
 export enum eExcuteStatus  {
+  /**
+   * 任务未执行
+   */
   UNEXECUTED = 0,
+  /**
+   * 任务执行中
+   */
   PENDING = 1,
+  /**
+   * 任务执行完毕
+   */
   END = 2
 }
