@@ -6,7 +6,7 @@ export interface iLoopTimer {
   /**
    * 定时时间到了以后,需要执行的任务
    */
-  func: Function;
+  func: {key: Symbol, value: Function};
   /**
    * 执行频率,或者说设定的时间点
    */

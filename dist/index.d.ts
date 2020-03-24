@@ -19,7 +19,7 @@ declare class LoopTimer {
      */
     static getInstance(): LoopTimer;
     /**
-     * 注册轮询事件
+     * 注册轮询事件, 注册以后返回一个Symbol, 可以通过该Symbol参数来取消注册的事件
      * @param func 要执行的方法
      * @param frequency 执行的频率
      * @param isLoop 是否轮询,不停执行, 默认是false,只执行一次
@@ -27,12 +27,12 @@ declare class LoopTimer {
      */
     registry<T>(func: Function, frequency?: iTiming, isLoop?: boolean, callback?: {
         (code: eResultCode, data?: T): void;
-    }): void;
+    }): Symbol;
     /**
      * 移除注册到轮询事件的方法
      * @param func 要取消的方法
      */
-    unRegister(func: Function): void;
+    unRegister(s: Symbol): void;
     /**
      * 停止定时器
      */

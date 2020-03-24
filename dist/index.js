@@ -31,8 +31,8 @@ class LoopTimer {
         });
         if (deleteEvent.length > 0) {
             deleteEvent.forEach(item => {
-                if (this._events.has(item.func.name)) {
-                    this._events.delete(item.func.name);
+                if (this._events.has(item.func.key)) {
+                    this._events.delete(item.func.key);
                 }
             });
         }
@@ -41,10 +41,12 @@ class LoopTimer {
         /**
          * 任务如果是异步任务, 并且任务的状态是未执行状态或者是需要一直轮询且已经执行完毕过一次的任务,才能再次执行
          */
-        if (info.func.constructor.name === "AsyncFunction" && (info.executeStatus === iLoopTimer_1.eExcuteStatus.UNEXECUTED || info.executeStatus === iLoopTimer_1.eExcuteStatus.END)) {
+        if (info.func.value.constructor.name === "AsyncFunction" &&
+            (info.executeStatus === iLoopTimer_1.eExcuteStatus.UNEXECUTED ||
+                info.executeStatus === iLoopTimer_1.eExcuteStatus.END)) {
             info.executeStatus = iLoopTimer_1.eExcuteStatus.PENDING;
-            info
-                .func()
+            info.func
+                .value()
                 .then((res) => {
                 info.lastTime = new Date().getTime();
                 info.executeStatus = iLoopTimer_1.eExcuteStatus.END;
@@ -66,8 +68,8 @@ class LoopTimer {
                 info.executeStatus = iLoopTimer_1.eExcuteStatus.END;
             });
         }
-        else if (info.func.constructor.name === "Function") {
-            let result = info.func();
+        else if (info.func.value.constructor.name === "Function") {
+            let result = info.func.value();
             if (info.callback) {
                 info.callback(iLoopTimer_1.eResultCode.SUCCESS, result);
             }
@@ -115,33 +117,38 @@ class LoopTimer {
         }
         return this.instance;
     }
+    // registry(func: Function, isLoop: boolean = false, frequency: iTiming = { seconds: '*', minutes: '*', hour: '*', day: '*', week: '*', month: '*' }) {
     /**
-     * 注册轮询事件
+     * 注册轮询事件, 注册以后返回一个Symbol, 可以通过该Symbol参数来取消注册的事件
      * @param func 要执行的方法
      * @param frequency 执行的频率
      * @param isLoop 是否轮询,不停执行, 默认是false,只执行一次
      * @param callback 回调结果
      */
-    // registry(func: Function, isLoop: boolean = false, frequency: iTiming = { seconds: '*', minutes: '*', hour: '*', day: '*', week: '*', month: '*' }) {
     registry(func, frequency = { seconds: "*", minutes: "*", hour: "*" }, isLoop = false, callback) {
-        if (!func.name)
-            throw "LoopTimer的registry方法: 不支持匿名函数";
-        this._events.set(func.name, {
+        // if (!func.name) throw "LoopTimer的registry方法: 不支持匿名函数";
+        let s = Symbol();
+        let data = {
+            key: s,
+            value: func
+        };
+        this._events.set(s, {
             lastTime: new Date().getTime(),
-            func,
+            func: data,
             frequency,
             isLoop,
             executeStatus: iLoopTimer_1.eExcuteStatus.UNEXECUTED,
             callback
         });
+        return s;
     }
     /**
      * 移除注册到轮询事件的方法
      * @param func 要取消的方法
      */
-    unRegister(func) {
-        if (this._events.has(func.name)) {
-            this._events.delete(func.name);
+    unRegister(s) {
+        if (this._events.has(s)) {
+            this._events.delete(s);
         }
     }
     /**

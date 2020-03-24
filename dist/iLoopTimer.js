@@ -26,7 +26,16 @@ var eResultCode;
 })(eResultCode = exports.eResultCode || (exports.eResultCode = {}));
 var eExcuteStatus;
 (function (eExcuteStatus) {
+    /**
+     * 任务未执行
+     */
     eExcuteStatus[eExcuteStatus["UNEXECUTED"] = 0] = "UNEXECUTED";
+    /**
+     * 任务执行中
+     */
     eExcuteStatus[eExcuteStatus["PENDING"] = 1] = "PENDING";
+    /**
+     * 任务执行完毕
+     */
     eExcuteStatus[eExcuteStatus["END"] = 2] = "END";
 })(eExcuteStatus = exports.eExcuteStatus || (exports.eExcuteStatus = {}));

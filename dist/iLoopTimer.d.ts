@@ -6,7 +6,10 @@ export interface iLoopTimer {
     /**
      * 定时时间到了以后,需要执行的任务
      */
-    func: Function;
+    func: {
+        key: Symbol;
+        value: Function;
+    };
     /**
      * 执行频率,或者说设定的时间点
      */
@@ -91,7 +94,16 @@ export declare enum eResultCode {
     ERROR = 2
 }
 export declare enum eExcuteStatus {
+    /**
+     * 任务未执行
+     */
     UNEXECUTED = 0,
+    /**
+     * 任务执行中
+     */
     PENDING = 1,
+    /**
+     * 任务执行完毕
+     */
     END = 2
 }
