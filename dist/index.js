@@ -120,7 +120,7 @@ class LoopTimer {
     // registry(func: Function, isLoop: boolean = false, frequency: iTiming = { seconds: '*', minutes: '*', hour: '*', day: '*', week: '*', month: '*' }) {
     /**
      * 注册轮询事件, 注册以后返回一个Symbol, 可以通过该Symbol参数来取消注册的事件
-     * @param func 要执行的方法
+     * @param func 要执行的方法, 支持普通函数,匿名函数,异步函数
      * @param frequency 执行的频率
      * @param isLoop 是否轮询,不停执行, 默认是false,只执行一次
      * @param callback 回调结果

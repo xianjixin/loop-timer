@@ -49,14 +49,14 @@
 ### 传参的参数说明
 
         /**
-        * 注册轮询事件
-        * @param func 要执行的方法
+        * 注册轮询事件, 注册以后返回一个Symbol, 可以通过该Symbol参数来取消注册的事件
+        * @param func 要执行的方法, 支持普通函数,匿名函数,异步函数
         * @param frequency 执行的频率
         * @param isLoop 是否轮询,不停执行, 默认是false,只执行一次
         * @param callback 回调结果 请根据回调结果的code先判断下是否返回值符合预期
         */
         registry<T>(func: Function, frequency?: iTiming, isLoop?: boolean, callback?: {
-        (code: eResultCode, data?: T): void;
+        (code: eResultCode, data?: T): Symbol;
 
 > eResultCode的接口定义
 
