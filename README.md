@@ -1,6 +1,7 @@
 # loop-timer
 
 模拟 linux Crontab 的 js 定时任务,可以指定时间来执行任务,由于 JS 是单线程,所以如果指定的任务是个大计算量的任务,有可能会导致其他任务被延时执行,如果对时间准确性要求很高的,请慎用.
+项目里面同时只会存在一个计时器, 如果有没有可以执行事件的时候,计时器将会被销毁,有新的可执行事件才会再次开启新的计时器.
 
 ### 使用方法
 
@@ -15,29 +16,30 @@
         function log(){
             console.log('timer run:', new Date().getTime());
         }
-        loopTimer.registry(log,  {
+        let symbol: Symbol = loopTimer.registry(log,  {
             seconds: '*/10',
             minutes: '*',
             hour: '*'
         }, true, (code, data) => {
             console.log(code, data);
         });
+        //取消刚刚注册的事件
+        loopTimer.unRegister(symbol);
         //---------------------------------------------------------
         //vuejs中使用
         mounted(){
             let timer = LoopTimer.getInstance();
-            timer.registry(this.log, {
+            let symbol = timer.registry((){
+                console.log('timer run:', new Date().getTime());
+            }, {
                 seconds: '10',
                 minutes: '*',
                 hour: '*'
             }, false, (code, data) => {
                 console.log(code, data);
             });
-        },
-        methods: {
-            log(){
-                console.log('timer run:', new Date().getTime());
-            }
+            //取消刚刚注册的事件
+            timer.unRegister(symbol);
         },
 
         //代码解释
@@ -45,6 +47,7 @@
         // vuejs的示例中代表, 每次的第10秒的时候,执行任务.
         // 是否轮询一直执行任务呢, 就看第二个参数是true还是false,如果为true 一直执行,如果为false则只执行一次
         // 新增了结果回调, 执行的方法如果有返回值,则会将返回值通过匿名函数的方式传回给调用者
+        // 支持了匿名函数的调用,和取消匿名函数的执行, 通过反注册来取消. 注册事件的时候会返回一个Symbol值, 通过该值可以取消注册的事件, 让事件不再被执行.
 
 ### 传参的参数说明
 
@@ -58,7 +61,7 @@
         registry<T>(func: Function, frequency?: iTiming, isLoop?: boolean, callback?: {
         (code: eResultCode, data?: T): Symbol;
 
-> eResultCode的接口定义
+> eResultCode 的接口定义
 
         export enum eResultCode {
             /**

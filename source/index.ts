@@ -9,16 +9,20 @@ import { isValidTime } from "./TimeNodeUtils";
 
 class LoopTimer {
   private static instance: LoopTimer;
-  private _interval: number;
+  private _interval: number = 0;
   private _events: Map<Symbol, iLoopTimer> = new Map();
+  private _isForever: boolean = false;
 
   constructor() {
+    this._init();
+  }
+  private _init() {
+    if (this._interval) return;
     this._executeEvent();
     this._interval = setInterval(() => {
       this._executeEvent();
     }, 1000);
   }
-
   /**
    * 执行事件
    */
@@ -46,6 +50,10 @@ class LoopTimer {
           this._events.delete(item.func.key);
         }
       });
+    }
+    //如果已经没有注册的事件了,则将轮询器停止掉, 防止无谓的系统开销
+    if (this._events.size === 0) {
+      this.stopLoopTimer(false);
     }
   }
   private _executeFunc(info: iLoopTimer) {
@@ -187,6 +195,7 @@ class LoopTimer {
       executeStatus: eExcuteStatus.UNEXECUTED,
       callback
     });
+    this._init();
     return s;
   }
   /**
@@ -198,11 +207,17 @@ class LoopTimer {
       this._events.delete(s);
     }
   }
+
   /**
    * 停止定时器
+   * @param forever 是否永久停止计时器, 如果是false, 则计时器在注册了新的事件后, 将会重新开启计时器, 如果是true, 再永远不会再启动计时器
    */
-  stopLoopTimer() {
-    clearInterval(this._interval);
+  stopLoopTimer(forever: boolean = true) {
+    this._isForever = forever;
+    if (this._interval) {
+      clearInterval(this._interval);
+      this._interval = 0;
+    }
   }
 }
 

@@ -4,7 +4,14 @@ const iLoopTimer_1 = require("./iLoopTimer");
 const TimeNodeUtils_1 = require("./TimeNodeUtils");
 class LoopTimer {
     constructor() {
+        this._interval = 0;
         this._events = new Map();
+        this._isForever = false;
+        this._init();
+    }
+    _init() {
+        if (this._interval)
+            return;
         this._executeEvent();
         this._interval = setInterval(() => {
             this._executeEvent();
@@ -35,6 +42,10 @@ class LoopTimer {
                     this._events.delete(item.func.key);
                 }
             });
+        }
+        //如果已经没有注册的事件了,则将轮询器停止掉, 防止无谓的系统开销
+        if (this._events.size === 0) {
+            this.stopLoopTimer(false);
         }
     }
     _executeFunc(info) {
@@ -120,7 +131,7 @@ class LoopTimer {
     // registry(func: Function, isLoop: boolean = false, frequency: iTiming = { seconds: '*', minutes: '*', hour: '*', day: '*', week: '*', month: '*' }) {
     /**
      * 注册轮询事件, 注册以后返回一个Symbol, 可以通过该Symbol参数来取消注册的事件
-     * @param func 要执行的方法, 支持普通函数,匿名函数,异步函数
+     * @param func 要执行的方法
      * @param frequency 执行的频率
      * @param isLoop 是否轮询,不停执行, 默认是false,只执行一次
      * @param callback 回调结果
@@ -140,6 +151,7 @@ class LoopTimer {
             executeStatus: iLoopTimer_1.eExcuteStatus.UNEXECUTED,
             callback
         });
+        this._init();
         return s;
     }
     /**
@@ -153,9 +165,14 @@ class LoopTimer {
     }
     /**
      * 停止定时器
+     * @param forever 是否永久停止计时器, 如果是false, 则计时器在注册了新的事件后, 将会重新开启计时器, 如果是true, 再永远不会再启动计时器
      */
-    stopLoopTimer() {
-        clearInterval(this._interval);
+    stopLoopTimer(forever = true) {
+        this._isForever = forever;
+        if (this._interval) {
+            clearInterval(this._interval);
+            this._interval = 0;
+        }
     }
 }
 exports.default = LoopTimer;
